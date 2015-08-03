@@ -91,7 +91,7 @@ class ADB:
     def get_return_code(self):
         return self._return
 
-    def lastFailed(self):
+    def last_failed(self):
         """
         Did the last command fail?
         """
@@ -99,7 +99,7 @@ class ADB:
             return True
         return False
 
-    def run_cmd(self,cmd):
+    def run_cmd(self, cmd, run_in_background=False):
         """
         Runs a command by using adb tool ($ adb <cmd>)
         """
@@ -113,13 +113,23 @@ class ADB:
         # For compat of windows
         cmd_list = self.__build_command__(cmd)
 
-        adb_proc = subprocess.Popen(
-            cmd_list,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False
-        )
+        if run_in_background is False:
+            adb_proc = subprocess.Popen(
+                cmd_list,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False
+            )
+        else:
+            subprocess.Popen(
+                cmd_list,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False
+            )
+            return
         (self._output, self._error) = adb_proc.communicate()
         self._return = adb_proc.returncode
 
@@ -325,13 +335,13 @@ class ADB:
         self.run_cmd(['push',local,remote] )
         return self._output
 
-    def shell_command(self,cmd):
+    def shell_command(self, cmd, run_in_background=False):
         """
         Executes a shell command
         adb shell <cmd>
         """
         self.__clean__()
-        self.run_cmd(['shell',cmd])
+        self.run_cmd(['shell', cmd], run_in_background)
         return self._output
 
     def listen_usb(self):
@@ -343,7 +353,7 @@ class ADB:
         self.run_cmd("usb")
         return self._output
 
-    def listen_tcp(self,port=DEFAULT_TCP_PORT):
+    def listen_tcp(self, port=DEFAULT_TCP_PORT):
         """
         Restarts the adbd daemon listening on the specified port
         adb tcpip <port>
@@ -370,16 +380,16 @@ class ADB:
         self.run_cmd("jdwp")
         return self._output
 
-    def get_logcat(self,lcfilter=""):
+    def get_logcat(self, lcfilter=""):
         """
         View device log
         adb logcat <filter>
         """
         self.__clean__()
-        self.run_cmd(['logcat',lcfilter])
+        self.run_cmd(['logcat', lcfilter])
         return self._output
 
-    def run_emulator(self,cmd=""):
+    def run_emulator(self, cmd=""):
         """
         Run emulator console command
         """

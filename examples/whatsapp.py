@@ -255,7 +255,7 @@ def main():
     # restart server (may be other instances running)
     print("[+] Restarting ADB server...")
     adb.restart_server()
-    if adb.lastFailed():
+    if adb.last_failed():
         print("\t- ERROR\n")
         exit(-3)
 
@@ -320,7 +320,7 @@ def main():
     if supath is not None:
         print("[+] Checking if 'su' binary can give root access:")
         rootid = adb.shell_command('%s -c id' % supath)
-        if adb.lastFailed() is False and 'root' in rootid.replace('(',')').split(')'): # it can provide root privileges
+        if adb.last_failed() is False and 'root' in rootid.replace('(',')').split(')'): # it can provide root privileges
             print("\t- Yes")
             get_whatsapp_root(adb,supath)
         else: # only have normal-user

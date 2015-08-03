@@ -1,2 +1,4 @@
 .idea
 build
+scratch.py
+*.pyc
