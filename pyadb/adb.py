@@ -37,7 +37,7 @@ class ADB:
         self._error = None
         self._return = 0
 
-    def __parse_output__(self,outstr):
+    def __parse_output__(self, outstr):
         ret = None
 
         if len(outstr) > 0:
@@ -147,10 +147,7 @@ class ADB:
         adb version
         """
         self.run_cmd("version")
-        try:
-            ret = self._output.split()[-1:][0]
-        except:
-            ret = None
+        ret = self._output.split()[-1:][0]
         return ret
 
     def check_path(self):
@@ -161,7 +158,7 @@ class ADB:
             return False
         return True
 
-    def set_adb_path(self,adb_path):
+    def set_adb_path(self, adb_path):
         """
         Sets ADB tool absolute path
         """
@@ -200,13 +197,13 @@ class ADB:
         self.kill_server()
         return self.start_server()
 
-    def restore_file(self,file_name):
+    def restore_file(self, file_name):
         """
         Restore device contents from the <file> backup archive
         adb restore <file>
         """
         self.__clean__()
-        self.run_cmd(['restore' , file_name ])
+        self.run_cmd(['restore', file_name])
         return self._output
 
     def wait_for_device(self):
@@ -245,12 +242,12 @@ class ADB:
 
         return error, self._devices
 
-    def set_target_device(self,device):
+    def set_target_device(self, device):
         """
         Select the device to work with
         """
         self.__clean__()
-        if device is None or not device in self._devices:
+        if device is None or device not in self._devices:
             self._error = 'Must get device list first'
             self._return = 1
             return False
@@ -281,13 +278,13 @@ class ADB:
         self.run_cmd('get-serialno')
         return self._output
 
-    def reboot_device(self,mode):
+    def reboot_device(self, mode):
         """
         Reboot the target device
         adb reboot recovery/bootloader
         """
         self.__clean__()
-        if not mode in (self.REBOOT_RECOVERY,self.REBOOT_BOOTLOADER):
+        if mode not in (self.REBOOT_RECOVERY, self.REBOOT_BOOTLOADER):
             self._error = "mode must be REBOOT_RECOVERY/REBOOT_BOOTLOADER"
             self._return = 1
             return self._output
@@ -312,27 +309,27 @@ class ADB:
         self.run_cmd("remount")
         return self._output
 
-    def get_remote_file(self,remote,local):
+    def get_remote_file(self, remote, local):
         """
         Pulls a remote file
         adb pull remote local
         """
         self.__clean__()
-        self.run_cmd(['pull',remote , local] )
+        self.run_cmd(['pull', remote, local])
 
-        if self._error is not None and "bytes in" in self._error:
+        if self._error is not None and "bytes in" in self._error.decode('utf-8'):
             self._output = self._error
             self._error = None
 
         return self._output
 
-    def push_local_file(self,local,remote):
+    def push_local_file(self, local, remote):
         """
         Push a local file
         adb push local remote
         """
         self.__clean__()
-        self.run_cmd(['push',local,remote] )
+        self.run_cmd(['push', local, remote])
         return self._output
 
     def shell_command(self, cmd, run_in_background=False):
@@ -359,7 +356,7 @@ class ADB:
         adb tcpip <port>
         """
         self.__clean__()
-        self.run_cmd(['tcpip',port])
+        self.run_cmd(['tcpip', port])
         return self._output
 
     def get_bugreport(self):
@@ -394,28 +391,28 @@ class ADB:
         Run emulator console command
         """
         self.__clean__()
-        self.run_cmd(['emu',cmd])
+        self.run_cmd(['emu', cmd])
         return self._output
     
-    def connect_remote (self,host=DEFAULT_TCP_HOST,port=DEFAULT_TCP_PORT):
+    def connect_remote(self, host=DEFAULT_TCP_HOST, port=DEFAULT_TCP_PORT):
         """
         Connect to a device via TCP/IP
         adb connect host:port
         """
         self.__clean__()
-        self.run_cmd(['connect',"%s:%s" % ( host , port ) ] )
+        self.run_cmd(['connect', "%s:%s" % (host, port)])
         return self._output
     
-    def disconnect_remote (self , host=DEFAULT_TCP_HOST , port=DEFAULT_TCP_PORT):
+    def disconnect_remote(self, host=DEFAULT_TCP_HOST, port=DEFAULT_TCP_PORT):
         """
         Disconnect from a TCP/IP device
         adb disconnect host:port
         """
         self.__clean__()
-        self.run_cmd(['disconnect',"%s:%s" % ( host , port ) ] )
+        self.run_cmd(['disconnect', "%s:%s" % (host, port)])
         return self._output
     
-    def ppp_over_usb(self,tty=None,params=""):
+    def ppp_over_usb(self, tty=None, params=""):
         """
         Run PPP over USB
         adb ppp <tty> <params>
@@ -440,7 +437,7 @@ class ADB:
         self.run_cmd(['sync', directory])
         return self._output
     
-    def forward_socket(self, local=None,remote=None):
+    def forward_socket(self, local=None, remote=None):
         """
         Forward socket connections
         adb forward <local> <remote>
@@ -448,9 +445,8 @@ class ADB:
         self.__clean__()
         if local is None or remote is None:
             return self._output
-        self.run_cmd(['forward',local,remote])
+        self.run_cmd(['forward', local, remote])
         return self._output
-
 
     def uninstall(self, package=None, keepdata=False):
         """
@@ -460,7 +456,7 @@ class ADB:
         self.__clean__()
         if package is None:
             return self._output
-        cmd = ['uninstall',"%s" % (package if keepdata is True else "-k %s" % package )]
+        cmd = ['uninstall', "%s" % (package if keepdata is True else "-k %s" % package)]
         self.run_cmd(cmd)
         return self._output
 
@@ -485,7 +481,7 @@ class ADB:
         if sdcard is True:
             cmd += "-s "
         
-        self.run_cmd([cmd,pkgapp])
+        self.run_cmd([cmd, pkgapp])
         return self._output
 
     def find_binary(self, name=None):
@@ -493,11 +489,11 @@ class ADB:
         Look for a binary file on the device
         """
         
-        self.shell_command(['which',name])
+        self.shell_command(['which', name])
         
-        if self._output is None: # not found
+        if self._output is None:  # not found
             self._error = "'%s' was not found" % name
-        elif self._output.strip() == "which: not found": # 'which' binary not available
+        elif self._output.strip() == "which: not found":  # 'which' binary not available
             self._output = None
             self._error = "which binary not found"
         else:
